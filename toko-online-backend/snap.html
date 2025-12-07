@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Bayar Pesanan</title>
+  <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="Mid-client-VrLCE8eU2AdryYYv"></script>
+</head>
+<body>
+  <h2>Pembayaran Pesanan</h2>
+
+  <label for="pesananId">Masukkan ID Pesanan:</label>
+  <input type="number" id="pesananId" placeholder="Contoh: 16" />
+  <button id="pay-button">Bayar Sekarang</button>
+
+  <script>
+    document.getElementById('pay-button').addEventListener('click', function () {
+      const pesananId = document.getElementById('pesananId').value;
+
+      if (!pesananId) {
+        alert("Silakan isi ID pesanan terlebih dahulu!");
+        return;
+      }
+
+      fetch('https://069e48d8d05f.ngrok-free.app/api/transaksi/token', {
+
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pesanan_id: parseInt(pesananId) })
+      })
+      .then(res => {
+        if (!res.ok) throw new Error("Gagal ambil snap token");
+        return res.json();
+      })
+      .then(data => {
+        if (!data.token) {
+          alert("Transaksi tidak bisa diproses. Periksa pesanan ID.");
+          return;
+        }
+
+        // Jalankan Snap Midtrans
+        window.snap.pay(data.token, {
+          onSuccess: function(result) {
+            alert("✅ Pembayaran berhasil!");
+            console.log(result);
+          },
+          onPending: function(result) {
+            alert("⏳ Menunggu pembayaran...");
+            console.log(result);
+          },
+          onError: function(result) {
+            alert("❌ Pembayaran gagal!");
+            console.error(result);
+          },
+          onClose: function() {
+            alert("⚠️ Kamu menutup popup pembayaran.");
+          }
+        });
+      })
+      .catch(err => {
+        console.error("Fetch error:", err);
+        alert("Terjadi kesalahan saat memproses pembayaran.");
+      });
+    });
+  </script>
+</body>
+</html>

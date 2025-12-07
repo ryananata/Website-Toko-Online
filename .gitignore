@@ -1,0 +1,23 @@
+# Ignore environment files
+.env
+.env.*
+toko-online-backend/.env
+
+# Ignore node modules
+node_modules/
+toko-online-backend/node_modules/
+
+# Ignore build/dist/output
+dist/
+dist-ssr/
+.dist/
+toko-online-backend/uploads/
+
+# Logs
+logs
+*.log
+
+# OS / editor files
+.DS_Store
+.idea/
+.vscode/
